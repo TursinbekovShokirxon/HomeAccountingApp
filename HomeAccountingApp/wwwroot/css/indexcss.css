@@ -1,0 +1,37 @@
+﻿/* Стили для светлых границ и улучшенного внешнего вида */
+.border-light {
+    border-color: #e9ecef !important;
+}
+
+.card {
+    border-radius: 0.5rem;
+}
+
+.form-control, .input-group-text {
+    border-radius: 0.25rem;
+}
+
+    .form-control:focus {
+        border-color: #86b7fe;
+        box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+    }
+
+.btn-primary {
+    border-radius: 0.25rem;
+    transition: all 0.2s;
+}
+
+    .btn-primary:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+.bg-light {
+    background-color: #f8f9fa !important;
+}
+
+/* Улучшенные карточки для статистики */
+.rounded {
+    border-radius: 0.375rem !important;
+    border: 1px solid #e9ecef;
+}

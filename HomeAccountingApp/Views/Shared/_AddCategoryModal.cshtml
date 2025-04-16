@@ -1,0 +1,65 @@
+﻿@{
+    var successMessage = TempData["SuccessMessage"] as string;
+    var infoMessage = TempData["InfoMessage"] as string;
+    var errorMessage = TempData["ErrorMessage"] as string;
+}
+@if (!string.IsNullOrEmpty(successMessage))
+{
+    <div class="alert alert-success alert-dismissible fade show my-alert" role="alert">
+        @successMessage
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Закрыть"></button>
+    </div>
+    TempData.Remove("SuccessMessage");
+}
+
+<!-- Кнопка запуска модального окна -->
+<div class="mb-3">
+    <button class="btn btn-outline-dark" data-bs-toggle="modal" data-bs-target="#addCategoryModal">
+        Добавить категорию
+    </button>
+</div>
+
+<!-- Модальное окно -->
+<div class="modal fade" id="addCategoryModal" tabindex="-1" aria-labelledby="addCategoryModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addCategoryModalLabel">Добавить категорию</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
+            </div>
+            <div class="modal-body">
+                <form id="addCategoryForm" asp-controller="Category" asp-action="AddCategory" method="post">
+                    <div class="mb-3">
+                        <label for="categoryName" class="form-label">Название категории</label>
+                        <input type="text" class="form-control" id="categoryName" name="name" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="categoryType" class="form-label">Тип категории</label>
+                        <select class="form-select" id="categoryType" name="Type" required>
+                            <option value="" disabled selected>Выберите тип</option>
+                            <option value="Income">Прибыль</option>
+                            <option value="Expense">Расход</option>
+                        </select>
+                    </div>
+
+                    <button type="submit" class="btn btn-success">Добавить</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+    <script>
+        window.addEventListener("DOMContentLoaded", () => {
+            const alerts = document.querySelectorAll('.my-alert');
+
+            alerts.forEach(alert => {
+                setTimeout(() => {
+                    alert.classList.remove('show'); // анимация исчезновения (Bootstrap)
+                    setTimeout(() => alert.remove(), 150); // удаление из DOM
+                }, 3000); // 3 секунды
+            });
+        });
+</script>

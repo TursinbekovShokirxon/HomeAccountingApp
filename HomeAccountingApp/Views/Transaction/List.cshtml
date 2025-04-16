@@ -1,0 +1,60 @@
+﻿<div class="container-fluid mt-4">
+    <div class="card shadow-lg">
+        <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
+            <h4 class="mb-0">История операций</h4>
+            <div class="d-flex">
+
+                <select class="form-select form-select-sm me-2" id="monthFilter">
+                    <option value="all">Все месяцы</option>
+                    <!-- Другие месяцы будут добавляться динамически -->
+                </select>
+                <select class="form-select form-select-sm me-2" id="typeFilter">
+                    <option value="all">Все типы</option>
+                    <option value="income">Доходы</option>
+                    <option value="expense">Расходы</option>
+                </select>
+                <select class="form-select form-select-sm" id="categoryFilter">
+                    <option value="all">Все категории</option>
+                    <!-- Категории будут добавляться динамически -->
+                </select>
+            </div>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th width="15%">Дата</th>
+                            <th width="10%">Тип</th>
+                            <th width="20%">Категория</th>
+                            <th width="15%">Сумма</th>
+                            <th width="30%">Комментарий</th>
+                            <th width="10%"></th>
+                        </tr>
+                    </thead>
+                    <tbody id="transactionsTable">
+                        <tr>
+                            <td colspan="6" class="text-center py-5">
+                                <i class="bi bi-file-earmark-text fs-1 text-muted"></i>
+                                <p class="mt-2">Нет данных для отображения</p>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="card-footer bg-light d-flex justify-content-between">
+            <div class="d-flex align-items-center">
+                <span class="me-2">Показано:</span>
+                <select id="itemsCountSelector" class="form-select form-select-sm" style="width: 80px;">
+                    <option value="10">10</option>
+                    <option value="25" selected>25</option>
+                    <option value="50">50</option>
+                    <option value="100">100</option>
+                </select>
+            </div>
+        </div>
+
+</div>
+<link rel="stylesheet" href="~/css/LissTransactionCSS.css"></link>
+<script src="~/js/TransactionJS.js"></script>

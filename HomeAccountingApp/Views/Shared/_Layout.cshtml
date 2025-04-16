@@ -1,0 +1,53 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - HomeAccountingApp</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/HomeAccountingApp.styles.css" asp-append-version="true" />
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="row">
+
+            <nav class="col-md-2 d-none d-md-block bg-dark sidebar pt-3 d-flex flex-column justify-content-between" style="min-height: 100vh;">
+                <div>
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a class="nav-link text-white" asp-controller="Home" asp-action="Index">Главная</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-white" asp-controller="Transaction" asp-action="List">Транзакции</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-white" asp-controller="Home" asp-action="Privacy">Политика</a>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="mt-auto border-top border-secondary p-3 text-white text-center fw-bold">
+                   Пользователь : @User.Identity?.Name
+
+                    <form asp-controller="Account" asp-action="Logout" method="post" class="px-3 pb-3">
+                        <button type="submit" class="btn btn-outline-light w-100">LogOut</button>
+                    </form>
+                </div>
+                
+            </nav>
+
+
+            <!-- Контент -->
+            <main role="main" class="col-md-10 ms-sm-auto px-4 py-3">
+                @RenderBody()
+            </main>
+
+        </div>
+    </div>
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

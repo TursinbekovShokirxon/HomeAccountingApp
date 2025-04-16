@@ -1,0 +1,27 @@
+﻿.table-success {
+    background-color: rgba(40, 167, 69, 0.1) !important;
+}
+
+.table-danger {
+    background-color: rgba(220, 53, 69, 0.1) !important;
+}
+
+.delete-btn {
+    transition: all 0.2s;
+}
+
+    .delete-btn:hover {
+        transform: scale(1.1);
+    }
+
+.table-responsive {
+    max-height: 60vh;
+    overflow-y: auto;
+}
+
+.table thead {
+    position: sticky;
+    top: 0;
+    background-color: #f8f9fa;
+    z-index: 10;
+}
