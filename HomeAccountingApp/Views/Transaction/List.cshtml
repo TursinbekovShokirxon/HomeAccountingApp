@@ -13,10 +13,24 @@
                     <option value="income">Доходы</option>
                     <option value="expense">Расходы</option>
                 </select>
-                <select class="form-select form-select-sm" id="categoryFilter">
-                    <option value="all">Все категории</option>
-                    <!-- Категории будут добавляться динамически -->
-                </select>
+
+                <div class="dropdown">
+                    <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                        Категории
+                    </button>
+                    <ul class="dropdown-menu px-3" id="categoryDropdown">
+                        <li>
+                            <div class="form-check">
+                                <input class="form-check-input category-checkbox" type="checkbox" value="all" id="catAll">
+                                <label class="form-check-label" for="catAll">Все категории</label>
+                            </div>
+                        </li>
+                        <!-- Добавляешь категории динамически сюда -->
+                    </ul>
+                </div>
+
+
+
             </div>
         </div>
         <div class="card-body p-0">
@@ -43,6 +57,7 @@
                 </table>
             </div>
         </div>
+       <!-- #region выбор сколько транзакций можно выводить -->
         <div class="card-footer bg-light d-flex justify-content-between">
             <div class="d-flex align-items-center">
                 <span class="me-2">Показано:</span>
@@ -54,6 +69,9 @@
                 </select>
             </div>
         </div>
+
+<!-- #endregion -->
+   
 
 </div>
 <link rel="stylesheet" href="~/css/LissTransactionCSS.css"></link>

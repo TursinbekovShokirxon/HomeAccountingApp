@@ -1,0 +1,32 @@
+﻿/* ✅ Цвет для строк с типом "Доход" */
+.table-success {
+    background-color: rgba(40, 167, 69, 0.1) !important;
+}
+
+/* ❌ Цвет для строк с типом "Расход" */
+.table-danger {
+    background-color: rgba(220, 53, 69, 0.1) !important;
+}
+
+/* Удаление — плавное увеличение при наведении */
+.delete-btn {
+    transition: all 0.2s;
+}
+
+    .delete-btn:hover {
+        transform: scale(1.1);
+    }
+
+/* Обертка для прокрутки таблицы */
+.table-responsive {
+    max-height: 60vh;
+    overflow-y: auto;
+}
+
+/* Фиксация заголовка таблицы при прокрутке */
+.table thead {
+    position: sticky;
+    top: 0;
+    background-color: #f8f9fa;
+    z-index: 10;
+}

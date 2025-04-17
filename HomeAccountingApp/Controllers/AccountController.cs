@@ -26,21 +26,27 @@ public class AccountController : Controller
         {
             ViewBag.Error = "Пароли не совпадают";
             return View();
-        }    
-        var normalizedInput = userRegisterDTO.Username.Trim().ToLower();
+        }
+        if (userRegisterDTO.Password.Length < 8)
+        {
+            ViewBag.Error = "Пароль должен содержать не менее 8 символов";
+            return View();
+        }
+        var normalizedInput = NormalizeUsername(userRegisterDTO.Username);
 
         var result = _accountService.Register(normalizedInput, userRegisterDTO.Password);
         if (result.Result)
-        {
             return RedirectToAction("Login");
-        }
+        
         ViewBag.Error = "Пользователь с таким именем уже существует";
         return View();
     }
     [HttpPost]
     public async Task<IActionResult> Login(string username, string password)
     {
-       var result = await _accountService.Login(username, password);
+        string normalizedInput = username.Trim().ToLower();
+
+        var result = await _accountService.Login(normalizedInput, password);
         if (result!=null) // замените на проверку в БД
         {
             var claims = new List<Claim>
@@ -70,4 +76,6 @@ public class AccountController : Controller
     }
 
     public IActionResult AccessDenied() => View();
+    public string NormalizeUsername(string username) =>
+    username?.Trim().ToLowerInvariant();
 }

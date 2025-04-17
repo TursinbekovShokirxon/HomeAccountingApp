@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Diagnostics;
 using Microsoft.EntityFrameworkCore;
 using System.ComponentModel;
+using System.Runtime.CompilerServices;
 
 namespace HomeAccountingApp.Controllers
 {
@@ -65,9 +66,15 @@ namespace HomeAccountingApp.Controllers
             return RedirectToAction("Index", "Home");
         }
 
+        [HttpGet]
+        public async Task<IActionResult> Index()
+        {
+            return View();
+        }
 
-            [HttpGet("by-type")]
-            public async Task<IActionResult> GetByType([FromQuery] string? type="all")
+
+        [HttpGet("by-type")]
+        public async Task<IActionResult> GetByType([FromQuery] string? type="all")
             {
                 var userId = GetCurrentUserId();
 

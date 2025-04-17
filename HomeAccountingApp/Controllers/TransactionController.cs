@@ -13,7 +13,6 @@ namespace HomeAccountingApp.Controllers
     {
         private readonly ITransactionRepository _transactionRepository;
         private readonly ICategoryRepository _categoryRepository;
-        private const int DefaultPageSize = 25;
 
         public TransactionController(ITransactionRepository transactionRepository, ICategoryRepository categoryRepository)
         {
@@ -25,14 +24,14 @@ namespace HomeAccountingApp.Controllers
         {
             return View();
         }
+        //Для добавления транзакции
         [HttpPost("add-transaction")]
-
         public async Task<IActionResult> AddTransaction([FromBody] IndexTransactionModel model)
         {
             int userId = GetCurrentUserId();
             var category = await _categoryRepository.GetAll()
-      .Include(c => c.Users)
-      .FirstOrDefaultAsync(c => c.Id == model.CategoryId);
+                                                    .Include(c => c.Users)
+                                                    .FirstOrDefaultAsync(c => c.Id == model.CategoryId);
 
             if (category == null)
                 return BadRequest(new { Success = false, Error = "Категория не найдена" });
@@ -56,31 +55,27 @@ namespace HomeAccountingApp.Controllers
 
 
         }
-        // GET: /months - для заполнения фильтра месяцев
+        //для заполнения фильтра месяцев
+
         [HttpGet("api/months")]
         public async Task<IActionResult> GetMonths()
         {
             int userId = GetCurrentUserId();
-            var months = await _transactionRepository.GetAll()
+            var months = _transactionRepository.GetAll()
                       .Where(t => t.UserId == userId)
                      .Select(t => new { t.Date.Year, t.Date.Month })
                      .Distinct()
-                     .OrderByDescending(e => e.Year).ThenByDescending(e => e.Month)
-                     .ToListAsync();
+                     .OrderByDescending(e => e.Year).ThenByDescending(e => e.Month);
 
-            var result = months
+            var result =await months
                 .Select(m => $"{m.Year:D4}-{m.Month:D2}") // форматируем в C# после выборки
-                .ToList();
+                .ToListAsync();
             return Ok(result);
         }
 
-        // GET: /transactions - основной метод с фильтрацией
+        //основной метод с фильтрацией
         [HttpGet("api/transactions")]
-        public async Task<IActionResult> Transactions(
-     string month = "all",
-     string type = "all",
-     int category = 0,
-     int limit = DefaultPageSize)
+        public async Task<IActionResult> Transactions([FromQuery] TransactionFilterDTO filterDTO)
         {
             try
             {
@@ -90,25 +85,24 @@ namespace HomeAccountingApp.Controllers
                     .Include(t => t.Category)
                     .Where(t => t.UserId == userId);
 
-                if (month != "all" && DateOnly.TryParseExact(month + "-01", "yyyy-MM-dd", null, System.Globalization.DateTimeStyles.None, out var monthStart))
+                if (filterDTO.categories != null && filterDTO.categories.Any())
+                    query = query.Where(t => filterDTO.categories.Contains(t.CategoryId));
+                
+
+                if (filterDTO.month != "all" && DateOnly.TryParseExact(filterDTO.month + "-01", "yyyy-MM-dd", null, System.Globalization.DateTimeStyles.None, out var monthStart))
                 {
                     var monthEnd = monthStart.AddMonths(1);
                     query = query.Where(t => t.Date >= monthStart && t.Date < monthEnd);
                 }
 
-                if (Enum.TryParse<ExpenseIncome>(type, true, out var parsedType))
+                if (Enum.TryParse<ExpenseIncome>(filterDTO.type, true, out var parsedType))
                     query = query.Where(t => t.Category.Type == parsedType);
-                
-
-                // Фильтр по категории
-                if (category > 0)
-                    query = query.Where(t => t.CategoryId == category);
                 
 
                 // Пагинация
                 var transactions = query
                     .OrderByDescending(t => t.Date)
-                    .Take(limit);
+                    .Take(filterDTO.limit);
 
                 var result = transactions.Select(t => new 
                 {
@@ -130,7 +124,7 @@ namespace HomeAccountingApp.Controllers
         }
 
 
-        // DELETE:удаление транзакции
+        //удаление транзакции
         [HttpDelete("api/delete/transactions")]
         public async Task<IActionResult> DeleteTransaction(int id)
         {
@@ -138,10 +132,8 @@ namespace HomeAccountingApp.Controllers
                 .FirstOrDefaultAsync(t => t.Id == id && t.UserId == GetCurrentUserId());
 
             if (transaction == null)
-            {
-                return Json(new { Success = false, Error = "Транзакция не найдена" });
-            }
-
+                return BadRequest(new { Success = false, Error = "Транзакция не найдена" });
+            
             await _transactionRepository.Delete(transaction.Id);
 
             return Ok(new { Success = true });

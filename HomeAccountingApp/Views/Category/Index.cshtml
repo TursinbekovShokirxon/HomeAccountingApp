@@ -1,0 +1,41 @@
+﻿@await Html.PartialAsync("_AddCategoryModal")
+
+<div class="container-fluid mt-4">
+    <div class="card shadow-lg">
+        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+            <h4 class="mb-0">Управление категориями</h4>
+            <!-- Модальное окно добавления категории -->
+        
+        </div>
+
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th width="10%">ID</th>
+                            <th width="40%">Название</th>
+                            <th width="20%">Тип</th>
+                            <th width="30%">Действия</th>
+                        </tr>
+                    </thead>
+                    <tbody id="categoryTableBody">
+                        <!-- Пример строки категории -->
+                        <!-- Категории подставляются динамически -->
+                        <!--
+                        <tr>
+                            <td>1</td>
+                            <td>Продукты</td>
+                            <td>Расход</td>
+                            <td>
+                                <button class="btn btn-sm btn-outline-secondary me-2">Редактировать</button>
+                                <button class="btn btn-sm btn-outline-danger">Удалить</button>
+                            </td>
+                        </tr>
+                        -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
