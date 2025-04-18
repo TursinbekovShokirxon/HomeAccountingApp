@@ -36,7 +36,7 @@ namespace HomeAccountingApp
 
 
             builder.Services.AddScoped<ITransactionService,TransactionService>();
-            builder.Services.AddScoped<AccountService>();
+            builder.Services.AddScoped<IAccountService, AccountService>();
             builder.Services.AddScoped<ICategoryService,CategoryService>();
 
 

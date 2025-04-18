@@ -13,15 +13,6 @@ namespace HomeAccountingApp.Controllers
     [Authorize]
     public class HomeController : Controller
     {
-        private readonly ILogger<HomeController> _logger;
-        private readonly ICategoryRepository _categoryRepository;
-
-        public HomeController(ILogger<HomeController> logger, ICategoryRepository categoryRepository)
-        {
-            _logger = logger;
-            _categoryRepository = categoryRepository;
-        }
-
         public IActionResult Index()
         {
             return View();

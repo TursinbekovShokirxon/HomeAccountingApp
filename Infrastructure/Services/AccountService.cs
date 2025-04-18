@@ -1,9 +1,10 @@
 ﻿using Application.Interfaces.Repositories.Model;
+using Application.Interfaces.Services;
 using Domain.Entities;
 
 namespace Infrastructure.Services
 {
-    public class AccountService
+    public class AccountService : IAccountService
     {
         private readonly IUserRepository _userRepository;
         public AccountService(IUserRepository userRepository)
@@ -28,5 +29,6 @@ namespace Infrastructure.Services
             });
             return result;
         }
+
     }
 }

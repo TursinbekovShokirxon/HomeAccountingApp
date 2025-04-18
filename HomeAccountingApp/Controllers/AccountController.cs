@@ -47,7 +47,7 @@ public class AccountController : Controller
         string normalizedInput = username.Trim().ToLower();
 
         var result = await _accountService.Login(normalizedInput, password);
-        if (result!=null) // замените на проверку в БД
+        if (result!=null)
         {
             var claims = new List<Claim>
             {
