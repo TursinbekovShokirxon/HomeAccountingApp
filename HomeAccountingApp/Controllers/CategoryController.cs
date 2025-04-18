@@ -39,6 +39,7 @@ namespace HomeAccountingApp.Controllers
         public async Task<IActionResult> Index([FromQuery] string? type = "all")
         {
             var categories = await _categoryService.GetByType(User.GetCurrentUserId(), type);
+            ViewBag.Filter = new { type };
             return View(categories);
         }
 
