@@ -1,16 +1,13 @@
-﻿using Domain.DTO;
-using Infrastructure.Services;
+﻿using Application.Interfaces.Services;
+using Domain.DTO;
 using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
-using System.Xml.Linq;
 
 public class AccountController : Controller
 {
-    private readonly AccountService _accountService;
-    public AccountController(AccountService accountService)
+    private readonly IAccountService _accountService;
+    public AccountController(IAccountService accountService)
     {
         _accountService = accountService;
     }
@@ -37,7 +34,7 @@ public class AccountController : Controller
         var result = _accountService.Register(normalizedInput, userRegisterDTO.Password);
         if (result.Result)
             return RedirectToAction("Login");
-        
+
         ViewBag.Error = "Пользователь с таким именем уже существует";
         return View();
     }
@@ -47,7 +44,7 @@ public class AccountController : Controller
         string normalizedInput = username.Trim().ToLower();
 
         var result = await _accountService.Login(normalizedInput, password);
-        if (result!=null)
+        if (result != null)
         {
             var claims = new List<Claim>
             {
@@ -75,6 +72,7 @@ public class AccountController : Controller
         return RedirectToAction("Login");
     }
 
+    [HttpGet]
     public IActionResult AccessDenied() => View();
     public string NormalizeUsername(string username) =>
     username?.Trim().ToLowerInvariant();

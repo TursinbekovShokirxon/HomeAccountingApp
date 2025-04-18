@@ -3,6 +3,7 @@ using Application.Interfaces.Services;
 using Infrastructure.Data;
 using Infrastructure.Repositories;
 using Infrastructure.Services;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
 using System.Text.Json;
 namespace HomeAccountingApp
@@ -21,13 +22,14 @@ namespace HomeAccountingApp
 
 
             builder.Services.AddAuthentication("MyCookieAuth")
-            .AddCookie("MyCookieAuth", options =>
-            {    
+        .AddCookie("MyCookieAuth", options =>
+        {
             options.Cookie.Name = "Accounting.Cookie";
             options.LoginPath = "/Account/Login";
             options.AccessDeniedPath = "/Account/AccessDenied";
-            options.ExpireTimeSpan = TimeSpan.FromHours(2);
-            });
+            options.ExpireTimeSpan = TimeSpan.FromHours(2); 
+            options.SlidingExpiration = true; 
+        });
 
 
             builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
