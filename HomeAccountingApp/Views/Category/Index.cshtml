@@ -1,41 +1,95 @@
-﻿@await Html.PartialAsync("_AddCategoryModal")
+﻿@model IEnumerable<Domain.DTO.CategoryDto>
+@{
+    var selectedType = ViewBag.Filter?.Type ?? "all";
+}
 
+
+<form asp-controller="Category" asp-action="Index" method="get" class="mb-3" id="categoryFilterForm">
+    @Html.AntiForgeryToken()
+    <div class="btn-group" role="group" aria-label="Тип категории">
+        <input type="radio" class="btn-check" name="Type" id="all" value="all" autocomplete="off" @(selectedType == "all" ? "checked" : "") onchange="submitFilterForm()">
+        <label class="btn btn-outline-primary" for="all">Все</label>
+
+        <input type="radio" class="btn-check" name="Type" id="income" value="Income" autocomplete="off" @(selectedType == "Income" ? "checked" : "") onchange="submitFilterForm()">
+        <label class="btn btn-outline-success" for="income">Доход</label>
+
+        <input type="radio" class="btn-check" name="Type" id="expense" value="Expense" autocomplete="off" @(selectedType == "Expense" ? "checked" : "") onchange="submitFilterForm()">
+        <label class="btn btn-outline-danger" for="expense">Расход</label>
+    </div>
+
+</form>
+@await Html.PartialAsync("_AddCategoryModal")
 <div class="container-fluid mt-4">
     <div class="card shadow-lg">
-        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
-            <h4 class="mb-0">Управление категориями</h4>
-            <!-- Модальное окно добавления категории -->
-        
+        <div class="card-header bg-primary text-white">
+            <h4 class="mb-0">Категории</h4>
         </div>
-
         <div class="card-body p-0">
             <div class="table-responsive">
                 <table class="table table-hover mb-0">
                     <thead class="table-light">
                         <tr>
-                            <th width="10%">ID</th>
                             <th width="40%">Название</th>
                             <th width="20%">Тип</th>
                             <th width="30%">Действия</th>
                         </tr>
                     </thead>
-                    <tbody id="categoryTableBody">
-                        <!-- Пример строки категории -->
-                        <!-- Категории подставляются динамически -->
-                        <!--
-                        <tr>
-                            <td>1</td>
-                            <td>Продукты</td>
-                            <td>Расход</td>
-                            <td>
-                                <button class="btn btn-sm btn-outline-secondary me-2">Редактировать</button>
-                                <button class="btn btn-sm btn-outline-danger">Удалить</button>
-                            </td>
-                        </tr>
-                        -->
+                    <tbody>
+                        @foreach (var category in Model)
+                        {
+                            <tr>
+                                <td>@category.Name</td>
+
+                                <td>
+                                    <span class="badge @(category.Type.ToString().ToLower() == "income" ? "bg-success" : "bg-danger")">
+                                        @(category.Type.ToString().ToLower() == "income" ? "Прибыль" : "Расход")
+                                    </span>
+                                </td>
+
+                                <td>
+                                    <button class="btn btn-sm btn-outline-danger btn-delete-category" data-id="@category.Id">
+                                        Удалить
+                                    </button>
+                                </td>
+                            </tr>
+                        }
                     </tbody>
                 </table>
             </div>
         </div>
     </div>
 </div>
+@section Scripts {
+    <script>
+       
+        function submitFilterForm() {
+            document.getElementById('categoryFilterForm').submit();       
+        }
+                    document.addEventListener("DOMContentLoaded", function () {
+            const deleteButtons = document.querySelectorAll(".btn-delete-category");
+
+            deleteButtons.forEach(button => {
+                button.addEventListener("click", function (e) {
+                    e.preventDefault();
+
+                    const categoryId = this.dataset.id;
+                    const row = this.closest("tr");
+
+                    if (confirm("Вы уверены, что хотите удалить эту категорию?")) {
+                        fetch(`/api/delete/${categoryId}`, {
+                            method: "DELETE"
+                        })
+                        .then(response => {
+                            if (response.ok) {
+                                row.remove(); // удаляем строку из таблицы
+                            } else {
+                                alert("Ошибка при удалении категории.");
+                            }
+                        });
+                    }
+                });
+            });
+        });
+               
+    </script>
+}

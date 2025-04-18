@@ -28,6 +28,5 @@ namespace Infrastructure.Services
             });
             return result;
         }
-
     }
 }

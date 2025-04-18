@@ -5,52 +5,81 @@
     const transactionsTable = document.getElementById('transactionsTable');
     var itemCountSelector = document.getElementById('itemsCountSelector');
     const dropdown = document.getElementById('categoryDropdown');
-    const checkboxes = document.querySelectorAll('.category-checkbox');
     // Состояние
     let allTransactions = [];
     let allMonths = [];
     let itemsPerPage = 25;
 
-    // Инициализация месяцев в фильтрации
-    loadMonthsInTransaction();
-    // Инициализация категорий в фильтрации
-    loadCategories()
-    // После загрузки категорий устанавливаем обработчики
-    setupCategoryCheckboxHandlers();
-    loadTransactions(); 
+    // Инициализация
+    init();
+    function init() {
+        // Инициализация месяцев в фильтрации
+        loadMonthsInTransaction();
+        // Инициализация категорий в фильтрации
+        loadCategories()
+        // После загрузки категорий устанавливаем обработчики
+        setupCategoryCheckboxHandlers();
+        loadTransactions();
+        EventListeners();
+    }
+    function EventListeners() {
+        // Обработчики событий работает при изменении типа доход расход
+        typeFilter.addEventListener('change', () => {
+            loadCategories(); // Обновляем категории при изменении типа
+            loadTransactions(); // Загружаем транзакции с новыми фильтрами
+        });
 
-    // Обработчики событий работает при изменении типа доход расход
-    typeFilter.addEventListener('change', () => {
-        loadCategories(); // Обновляем категории при изменении типа
-        loadTransactions(); // Загружаем транзакции с новыми фильтрами
-    });
+        // Обработчики событий работает при изменении месяца
+        monthFilter.addEventListener('change', loadTransactions);
 
-    // Обработчики событий работает при изменении месяца
-    monthFilter.addEventListener('change', loadTransactions);
+        // Обработчики событий работает при изменении выводимого количества элементов внизу слева
+        itemCountSelector.addEventListener('change', (e) => {
+            itemsPerPage = parseInt(e.target.value);
+            loadTransactions(); // перезагружаем с новым лимитом
+        });
+    }
 
-    // Обработчики событий работает при изменении выводимого количества элементов внизу слева
-    itemCountSelector.addEventListener('change', (e) => {
-        itemsPerPage = parseInt(e.target.value);
-        loadTransactions(); // перезагружаем с новым лимитом
-    });
 
 
     function setupCategoryCheckboxHandlers() {
-        // Используем делегирование событий на родительском элементе
         dropdown.addEventListener('change', function (e) {
-            // Проверяем, что событие произошло на чекбоксе
-            if (e.target.classList.contains('category-checkbox')) {
-                handleCategorySelection(e.target);
+            if (!e.target.classList.contains('category-checkbox')) return;
+
+            const allCheckbox = document.getElementById('catAll');
+            const checkboxes = dropdown.querySelectorAll('.category-checkbox');
+
+            // Обработка выбора "Все категории"
+            if (e.target === allCheckbox) {
+                if (e.target.checked) {
+                    checkboxes.forEach(cb => {
+                        if (cb !== allCheckbox) cb.checked = false;
+                    });
+                }
+            } else {
+                // Если выбрана конкретная категория
+                allCheckbox.checked = false;
+
+                // Если ничего не выбрано, автоматически выбираем "Все"
+                const anyChecked = Array.from(checkboxes)
+                    .some(cb => cb.checked && cb !== allCheckbox);
+
+                if (!anyChecked) {
+                    allCheckbox.checked = true;
+                }
             }
+
+            loadTransactions();
         });
     }
+
     async function loadCategories() {
 
         // Загружаем категории в зависимости от типа
         const selectedType = typeFilter.value;
         let selectedTypeString = "";
         if (selectedType === 'all') selectedTypeString = "/by-type";
-         else selectedTypeString = `/by-type?type=${selectedType}`;
+        else selectedTypeString = `/by-type?type=${selectedType}`;
+
 
         await fetch(selectedTypeString, {
             cache: 'no-cache',
@@ -59,7 +88,17 @@
         })
             .then(res => res.json())
             .then(data => {
+                dropdown.innerHTML = ''; // Очистка перед новой вставкой
+                dropdown.insertAdjacentHTML('beforeend', `
+    <li>
+        <div class="form-check">
+            <input class="form-check-input category-checkbox" type="checkbox" value="all" id="catAll" checked>
+            <label class="form-check-label" for="catAll">Все категории</label>
+        </div>
+    </li>
+`);
                 data.forEach(cat => {
+
                     const id = `cat${cat.id}`;
                     dropdown.insertAdjacentHTML('beforeend', `
                     <li>
@@ -70,66 +109,25 @@
                     </li>
                 `);
                 });
-
-                setupCategoryCheckboxLogic();
+                dropdown.insertAdjacentHTML('beforeend', `
+    <li>
+        <div class="form-check">
+            <input class="form-check-input category-checkbox" type="checkbox" value="other" id="other">
+            <label class="form-check-label" for="other">Другое</label>
+        </div>
+    </li>
+`);
+                setupCategoryCheckboxHandlers();
             });
-        function setupCategoryCheckboxLogic() {
-            const allCheckbox = dropdown.querySelector('.category-checkbox[value="all"]');
-
-            dropdown.addEventListener('change', (e) => {
-                if (e.target.value === 'all') {
-                    if (e.target.checked) {
-                        checkboxes.forEach(cb => {
-                            if (cb !== allCheckbox) cb.checked = false;
-                        });
-                    }
-                } else {
-                    allCheckbox.checked = false;
-                }
-
-                const selectedIds = Array.from(checkboxes)
-                    .filter(cb => cb.checked && cb.value !== 'all')
-                    .map(cb => cb.value);
-
-                console.log("Выбранные категории:", selectedIds);
-                // Загружаем транзакции с новыми фильтрами
-                loadTransactions();
-            });
-        }
-    }
-    // Обработчик выбора категории
-    function handleCategorySelection(checkbox) {
-        const allCheckbox = dropdown.querySelector('#catAll');
-
-        if (checkbox.value === 'all') {
-            // Если выбран "Все категории"
-            if (checkbox.checked) {
-                // Снимаем выбор с остальных чекбоксов
-                checkboxes.forEach(cb => {
-                    if (cb !== allCheckbox) cb.checked = false;
-                });
-            }
-        } else {
-            // Если выбрана конкретная категория
-            allCheckbox.checked = false;
-
-            // Проверяем, есть ли выбранные категории
-            const anyChecked = Array.from(checkboxes)
-                .some(cb => cb.checked && cb !== allCheckbox);
-
-            // Если ничего не выбрано, выбираем "Все"
-            if (!anyChecked) {
-                allCheckbox.checked = true;
-            }
-        }
-
-        // Обновляем транзакции с новыми фильтрами
-        loadTransactions();
     }
     function GetInformationInCheckBox() {
+        const checkboxes = dropdown.querySelectorAll('.category-checkbox');
         return Array.from(checkboxes)
             .filter(cb => cb.checked && cb.value !== 'all')
-            .map(cb => parseInt(cb.value));
+            .map(cb => {
+                if (cb.value === 'other') return -1; // или другое специальное значение
+                return parseInt(cb.value);
+            });
     }
         // Основная функция загрузки транзакций с фильтрами
         async function loadTransactions() {
@@ -291,12 +289,10 @@
             const date = new Date(dateString);
             return date.toLocaleDateString('ru-RU');
         }
-
         function showSuccess(message) {
             alert(message); // Можно заменить на toast-уведомление
         }
         function showError(message) {
             alert(message); // Можно заменить на toast-уведомление
     }
-    
 });

@@ -1,4 +1,5 @@
 using Application.Interfaces.Repositories.Model;
+using Application.Interfaces.Services;
 using Infrastructure.Data;
 using Infrastructure.Repositories;
 using Infrastructure.Services;
@@ -34,8 +35,9 @@ namespace HomeAccountingApp
             builder.Services.AddScoped<IUserRepository, UserRepository>();
 
 
-            builder.Services.AddScoped<TransactionService>();
+            builder.Services.AddScoped<ITransactionService,TransactionService>();
             builder.Services.AddScoped<AccountService>();
+            builder.Services.AddScoped<ICategoryService,CategoryService>();
 
 
             builder.Services.AddDbContext<HomeAccountingContext>(options =>
