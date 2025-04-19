@@ -14,5 +14,9 @@ namespace Application.Utilities
         {
             return int.Parse(user.FindFirst("UserId")?.Value ?? throw new UnauthorizedAccessException("User ID not found"));
         }
+        public static string NormalizeUsername(this string username)
+        {
+            return username.Trim().ToLower();
+        }
     }
 }

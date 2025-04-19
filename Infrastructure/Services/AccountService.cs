@@ -15,9 +15,9 @@ namespace Infrastructure.Services
         {
             var users = _userRepository.GetAll();
             var user = users.FirstOrDefault(x => x.Username == username);
-            if (user != null && HasherService.Verify(password, user.Password))               
-                return user;
             
+            if (user != null&&HasherService.Verify(password, user.Password))               
+                return user;
             return null;
         }
         public async Task<bool> Register(string username, string password)

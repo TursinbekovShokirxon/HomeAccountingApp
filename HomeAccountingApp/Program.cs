@@ -1,5 +1,6 @@
 using Application.Interfaces.Repositories.Model;
 using Application.Interfaces.Services;
+using Application.Security;
 using Infrastructure.Data;
 using Infrastructure.Repositories;
 using Infrastructure.Services;
@@ -17,33 +18,33 @@ namespace HomeAccountingApp
             // Add services to the container.
             builder.Services.AddControllersWithViews().AddJsonOptions(options =>
             {
-                options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase; 
-            }); ;
-
+                options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
+            });
 
             builder.Services.AddAuthentication("MyCookieAuth")
-        .AddCookie("MyCookieAuth", options =>
-        {
-            options.Cookie.Name = "Accounting.Cookie";
-            options.LoginPath = "/Account/Login";
-            options.AccessDeniedPath = "/Account/AccessDenied";
-            options.ExpireTimeSpan = TimeSpan.FromHours(2); 
-            options.SlidingExpiration = true; 
-        });
+                .AddCookie("MyCookieAuth", options =>
+                {
+                    options.Cookie.Name = "Accounting.Cookie";
+                    options.LoginPath = "/Account/Login";
+                    options.AccessDeniedPath = "/Account/AccessDenied";
+                    options.ExpireTimeSpan = TimeSpan.FromHours(2);
+                    options.SlidingExpiration = true;
+                });
+            //Кэширование   
+            builder.Services.AddMemoryCache();
 
 
             builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
             builder.Services.AddScoped<ITransactionRepository, TransactionRepository>();
             builder.Services.AddScoped<IUserRepository, UserRepository>();
 
-
-            builder.Services.AddScoped<ITransactionService,TransactionService>();
+            builder.Services.AddScoped<ITransactionService, TransactionService>();
+            builder.Services.AddScoped<LoginProtectionService>();
             builder.Services.AddScoped<IAccountService, AccountService>();
-            builder.Services.AddScoped<ICategoryService,CategoryService>();
-
+            builder.Services.AddScoped<ICategoryService, CategoryService>();
 
             builder.Services.AddDbContext<HomeAccountingContext>(options =>
-            options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+                options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
             var app = builder.Build();
 
@@ -51,22 +52,19 @@ namespace HomeAccountingApp
             if (!app.Environment.IsDevelopment())
             {
                 app.UseExceptionHandler("/Home/Error");
-                // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
-            
 
             app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseRouting();
-            app.UseAuthentication(); 
+            app.UseAuthentication();
             app.UseAuthorization();
             app.MapControllerRoute(
                 name: "default",
                 pattern: "{controller=Account}/{action=Login}/{id?}");
 
             app.Run();
-
         }
     }
 }

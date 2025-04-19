@@ -1,9 +1,8 @@
-﻿@model IEnumerable<Domain.DTO.CategoryDto>
+﻿@using Domain.DTO
+@model IEnumerable<CategoryDto>
 @{
     var selectedType = ViewBag.Filter?.type ?? "all";
 }
-
-
 <form asp-controller="Category" asp-action="Index" method="get" class="mb-3" id="categoryFilterForm">
     @Html.AntiForgeryToken()
     <div class="btn-group" role="group" aria-label="Тип категории">
